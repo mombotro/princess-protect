@@ -4,13 +4,14 @@
 > Play as a brave knight riding a horse and protect Princess Milena from Greeks in her golden fortress!
 
 🎮 **Play directly in your browser:**  
-👉 **[https://mombotro.github.io/princess-protect/](https://mombotro.github.io/princess-protect/)**
+👉 **[http://boccbo.cc/princess-protect/](http://boccbo.cc/princess-protect/)**  
+*(also available at: [https://mombotro.github.io/princess-protect/](https://mombotro.github.io/princess-protect/))*
 
 ---
 
 ## 🎮 How to Play
 
-Open the [live link](https://mombotro.github.io/princess-protect/) or [`index.html`](file:///Users/juleah/Documents/games/Vala/princess-protect/index.html) in any modern web browser (Chrome, Safari, Firefox, Edge).
+Open the [live game](http://boccbo.cc/princess-protect/) or [`index.html`](file:///Users/juleah/Documents/games/Vala/princess-protect/index.html) in any modern web browser (Chrome, Safari, Firefox, Edge).
 
 ### Simple Controls (Arrow Keys + Space)
 | Key | Action | Description |
