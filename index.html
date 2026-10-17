@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Princess Protect - A Kid Game by a 6 Year Old</title>
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    <!-- 3D WebGL Canvas Container -->
+    <div id="game-canvas-container"></div>
+
+    <!-- Red Damage Flash Layer -->
+    <div id="damage-flash"></div>
+
+    <!-- Floating Combat Text Layer -->
+    <div id="combat-text-layer"></div>
+
+    <!-- Slavic Medieval HUD Layer -->
+    <div id="hud-layer">
+        <!-- TOP ROW: Princess Sanctuary Health & Wave Stats -->
+        <div class="hud-top-bar">
+            <!-- Left Stats Panel -->
+            <div class="hud-panel">
+                <div class="stats-group">
+                    <div class="stat-item">
+                        <span class="stat-label">Wave</span>
+                        <span class="stat-value" id="hud-wave">1</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Knocked Down</span>
+                        <span class="stat-value" id="hud-knockdowns">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Score</span>
+                        <span class="stat-value" id="hud-score">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Princess Sanctuary Health Bar -->
+            <div class="hud-panel princess-hud">
+                <div class="princess-title-row">
+                    <span>👑</span>
+                    <span>PRINCESS MILENA</span>
+                </div>
+                <div class="princess-health-track">
+                    <div class="princess-health-fill" id="princess-health-fill"></div>
+                    <span class="princess-health-text" id="princess-health-text">200 / 200</span>
+                </div>
+            </div>
+
+            <!-- Right Mini-Map & Audio Controls -->
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <div class="minimap-container">
+                    <canvas id="minimap-canvas" width="130" height="130"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Combo Streak Badge -->
+        <div id="hud-combo-badge">2x COMBO!</div>
+
+        <!-- Wave Announcement Banner -->
+        <div id="wave-banner">
+            <div id="wave-banner-title">Wave 1</div>
+            <div id="wave-banner-sub">Protect Princess Milena!</div>
+        </div>
+
+        <!-- BOTTOM ROW: Simple Controls Legend -->
+        <div class="hud-bottom-bar">
+            <!-- Controls Legend -->
+            <div class="controls-legend" style="font-size: 14px; padding: 10px 18px;">
+                <span><span class="key-pill">⬅️ ➡️</span> Steer</span>
+                <span><span class="key-pill">⬆️</span> Gallop</span>
+                <span><span class="key-pill">⬇️</span> Slow Down</span>
+                <span><span class="key-pill" style="font-size: 13px;">SPACE</span> Knock Down Bad Guys!</span>
+                <span><span class="key-pill">M</span> Mute</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="hud-buttons">
+                <button class="hud-btn" id="btn-health-mode" onclick="window.game && window.game.toggleNoHealthMode()" style="color: #ffd700; font-weight: 800;">⭐ KIDS MODE: ON</button>
+                <button class="hud-btn" id="btn-camera" onclick="window.game && window.game.cycleCamera()">🎥 CAMERA</button>
+                <button class="hud-btn" id="btn-mute" onclick="window.game && window.game.updateMuteButton(window.Sound.toggleMute())">🔊 SOUND</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Virtual Touch Controls -->
+    <div id="touch-controls-layer">
+        <div id="touch-joystick-zone">
+            <div id="touch-joystick-stick"></div>
+        </div>
+        <div class="touch-action-buttons">
+            <button class="touch-circle-btn" id="btn-touch-sweep" style="width: 85px; height: 85px; font-size: 14px; background: linear-gradient(135deg, #d82c20, #8b111a);">💥 SPACE<br>KNOCK DOWN!</button>
+        </div>
+    </div>
+
+    <!-- START / INSTRUCTIONS MODAL (Kid-Friendly & Welcoming) -->
+    <div class="game-modal" id="start-modal" style="display: flex;">
+        <div class="modal-card">
+            <h2>👑 PRINCESS PROTECT 🐎</h2>
+            <div style="color: #ffd700; font-size: 16px; font-weight: bold; margin-bottom: 12px;">
+                ⭐ A KID GAME BY A 6 YEAR OLD! ⭐
+            </div>
+            <p style="font-size: 18px; line-height: 1.6;">
+                You are a brave knight on a noble horse!<br>
+                Ride around and <strong>bump into bad guys to knock them flying with a funny BOING!</strong><br>
+                Princess Milena is safe in her golden castle!
+            </p>
+            <div style="margin: 20px auto; max-width: 440px; text-align: left; background: rgba(0,0,0,0.5); padding: 18px 24px; border-radius: 12px; border: 2px solid #ffd700; font-size: 18px; color: #fff; line-height: 2.2;">
+                <div>⬅️ ➡️ <strong>Left & Right Arrows</strong> : Steer Horse</div>
+                <div>⬆️ <strong>Up Arrow</strong> : Gallop Forward</div>
+                <div>⬇️ <strong>Down Arrow</strong> : Slow Down</div>
+                <div>💥 <strong>SPACEBAR</strong> : Knock Down Bad Guys!</div>
+            </div>
+
+            <!-- No Health Mode Toggle on Start Screen -->
+            <div style="margin-bottom: 18px;">
+                <button class="hud-btn" id="start-health-mode-btn" onclick="toggleKidsModeFromStart()" style="font-size: 15px; padding: 10px 22px; border: 2px solid #ffd700; border-radius: 20px; background: rgba(255, 215, 0, 0.25); cursor: pointer;">
+                    ⭐ No Health Mode: <strong id="start-health-mode-text" style="color: #ffd700;">ON (INVINCIBLE)</strong>
+                </button>
+            </div>
+
+            <button class="modal-action-btn" onclick="startGame()" style="font-size: 24px; padding: 16px 44px;">
+                🌟 LET'S PLAY! 🐎
+            </button>
+        </div>
+    </div>
+
+    <!-- GAME OVER MODAL -->
+    <div class="game-modal" id="game-over-modal">
+        <div class="modal-card">
+            <h2>SANCTUARY BREACHED</h2>
+            <p>Princess Milena's sanctuary has fallen to the Greek vanguard.</p>
+            <div style="font-size: 18px; color: #ffd700; margin-bottom: 20px;">
+                Final Score: <span id="final-score-text" style="font-weight: 800;">0</span><br>
+                Greeks Knocked Down: <span id="final-knockdown-text" style="font-weight: 800;">0</span>
+            </div>
+            <button class="modal-action-btn" onclick="window.game.restart()">RIDE AGAIN</button>
+        </div>
+    </div>
+
+    <!-- PAUSE MODAL -->
+    <div class="game-modal" id="pause-modal">
+        <div class="modal-card">
+            <h2>GAME PAUSED</h2>
+            <p>Press ESC or P to resume defending Princess Milena.</p>
+            <button class="modal-action-btn" onclick="window.game.togglePause()">RESUME</button>
+        </div>
+    </div>
+
+    <!-- Three.js (Offline local bundle with CDN fallback) -->
+    <script src="libs/three.min.js"></script>
+    <script>
+        if (typeof THREE === 'undefined') {
+            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+        }
+    </script>
+
+    <!-- Game Modules -->
+    <script src="js/audio.js"></script>
+    <script src="js/models.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/physics.js"></script>
+    <script src="js/game.js"></script>
+
+    <script>
+        function toggleKidsModeFromStart() {
+            if (window.game) {
+                window.game.toggleNoHealthMode();
+            }
+        }
+
+        function startGame() {
+            document.getElementById('start-modal').style.display = 'none';
+            if (window.Sound) {
+                window.Sound.resume();
+                window.Sound.startMusic();
+            }
+            if (window.game) {
+                window.game.isPaused = false;
+                window.game.startWave(1);
+            }
+        }
+    </script>
+</body>
+</html>

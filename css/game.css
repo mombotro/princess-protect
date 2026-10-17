@@ -1,0 +1,513 @@
+/* css/game.css - Slavic Royal Fairytale & Combat HUD Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #0b111a;
+    font-family: 'Cinzel', 'Georgia', 'Palatino', serif;
+    color: #f7e6c4;
+}
+
+#game-canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Red damage flash when Princess is hit */
+#damage-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 40%, rgba(200, 20, 20, 0.7) 100%);
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
+}
+
+/* Floating combat text layer */
+#combat-text-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 25;
+}
+
+.floating-combat-text {
+    position: absolute;
+    font-size: 24px;
+    font-weight: 900;
+    text-shadow: 0 0 8px rgba(0,0,0,0.9), 0 2px 4px #000;
+    white-space: nowrap;
+    letter-spacing: 1px;
+}
+
+/* --- HUD LAYER --- */
+#hud-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px 24px;
+}
+
+/* TOP BAR: Princess Health & Wave Stats */
+.hud-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.hud-panel {
+    background: linear-gradient(135deg, rgba(28, 16, 12, 0.88), rgba(15, 20, 30, 0.85));
+    border: 2px solid #c9933b;
+    border-radius: 8px;
+    padding: 10px 18px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(201, 147, 59, 0.2);
+    pointer-events: auto;
+}
+
+/* Princess Sanctuary Health Gauge (Center) */
+.princess-hud {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 380px;
+    margin: 0 auto;
+}
+
+.princess-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffd700;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.princess-health-track {
+    width: 100%;
+    height: 22px;
+    background: #2a1114;
+    border: 2px solid #ffd700;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+}
+
+.princess-health-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #9b111e, #d82c20, #ff5e3a);
+    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 12px rgba(230, 40, 40, 0.8);
+}
+
+.princess-health-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 2px;
+    left: 0;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 1px 3px #000;
+}
+
+/* Stats (Score, Knockdowns, Rubles) */
+.stats-group {
+    display: flex;
+    gap: 20px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: #b5a489;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffd700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* Mini-Map */
+.minimap-container {
+    width: 130px;
+    height: 130px;
+    border: 2px solid #c9933b;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(10, 16, 26, 0.85);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+    position: relative;
+    pointer-events: auto;
+}
+
+#minimap-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Combo Streak Badge */
+#hud-combo-badge {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, #e62828, #ff8800);
+    color: #fff;
+    font-size: 20px;
+    font-weight: 900;
+    padding: 6px 20px;
+    border-radius: 20px;
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 20px rgba(255, 100, 0, 0.8);
+    display: none;
+    animation: pulseCombo 0.4s infinite alternate;
+}
+
+@keyframes pulseCombo {
+    from { transform: translateX(-50%) scale(1); }
+    to { transform: translateX(-50%) scale(1.1); }
+}
+
+/* Wave Banner Announcement */
+#wave-banner {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+    background: linear-gradient(135deg, rgba(40, 15, 10, 0.95), rgba(15, 20, 35, 0.95));
+    border: 3px solid #ffd700;
+    border-radius: 12px;
+    padding: 24px 48px;
+    text-align: center;
+    box-shadow: 0 0 35px rgba(255, 215, 0, 0.6);
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 30;
+}
+
+#wave-banner-title {
+    font-size: 32px;
+    font-weight: 900;
+    color: #ffd700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+}
+
+#wave-banner-sub {
+    font-size: 18px;
+    color: #ede0c8;
+}
+
+/* BOTTOM BAR: Stamina & Controls */
+.hud-bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+}
+
+/* Stamina Bar */
+.stamina-hud {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 260px;
+}
+
+.stamina-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #8ed6ff;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.stamina-track {
+    width: 100%;
+    height: 14px;
+    background: #112233;
+    border: 2px solid #5aa9e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.stamina-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #1c7cd6, #4dabf7, #a5d8ff);
+    box-shadow: 0 0 10px rgba(77, 171, 247, 0.8);
+}
+
+/* Control Keys Legend */
+.controls-legend {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: #dec8a5;
+    background: rgba(15, 20, 30, 0.8);
+    border: 1px solid #73532b;
+    border-radius: 6px;
+    padding: 8px 14px;
+    pointer-events: auto;
+}
+
+.key-pill {
+    background: #3b2716;
+    color: #ffd700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    border: 1px solid #a67c38;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+/* Quick Action Buttons (Sound, Camera) */
+.hud-buttons {
+    display: flex;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+.hud-btn {
+    background: linear-gradient(180deg, #4d331d, #2e1e11);
+    color: #ffd700;
+    border: 1px solid #c9933b;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    transition: all 0.15s ease;
+}
+
+.hud-btn:hover {
+    background: linear-gradient(180deg, #664426, #3d2817);
+    box-shadow: 0 0 10px rgba(201, 147, 59, 0.6);
+}
+
+/* --- MODALS (Shop, Game Over, Pause) --- */
+.game-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(8, 12, 18, 0.82);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    backdrop-filter: blur(4px);
+}
+
+.modal-card {
+    background: linear-gradient(135deg, #2b1812, #181d28);
+    border: 3px solid #ffd700;
+    border-radius: 14px;
+    padding: 32px 42px;
+    max-width: 580px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 215, 0, 0.4);
+    text-align: center;
+}
+
+.modal-card h2 {
+    font-size: 32px;
+    color: #ffd700;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+}
+
+.modal-card p {
+    font-size: 16px;
+    color: #e3d3be;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+/* Shop Upgrades Grid */
+.shop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.shop-item {
+    background: rgba(40, 24, 18, 0.7);
+    border: 1px solid #a67c38;
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+}
+
+.shop-item h4 {
+    font-size: 15px;
+    color: #ffd700;
+    margin-bottom: 4px;
+}
+
+.shop-item p {
+    font-size: 12px;
+    color: #b5a489;
+    margin-bottom: 10px;
+}
+
+.shop-buy-btn {
+    background: linear-gradient(180deg, #c9933b, #8a5a1f);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: filter 0.15s ease;
+}
+
+.shop-buy-btn:hover {
+    filter: brightness(1.2);
+}
+
+.modal-action-btn {
+    background: linear-gradient(180deg, #d82c20, #8b111a);
+    color: #fff;
+    border: 2px solid #ffd700;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 1.5px;
+    box-shadow: 0 4px 15px rgba(216, 44, 32, 0.6);
+    transition: transform 0.15s ease;
+}
+
+.modal-action-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Touch Controls (Mobile) */
+#touch-controls-layer {
+    display: none;
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    padding: 0 24px;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 20;
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+    #touch-controls-layer {
+        display: flex;
+    }
+    .controls-legend {
+        display: none;
+    }
+    .princess-hud {
+        min-width: 240px;
+    }
+}
+
+#touch-joystick-zone {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    position: relative;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+#touch-joystick-stick {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 215, 0, 0.7);
+    position: absolute;
+    top: 35px;
+    left: 35px;
+    pointer-events: none;
+}
+
+.touch-action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: auto;
+}
+
+.touch-circle-btn {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8b111a, #5a1114);
+    border: 2px solid #ffd700;
+    color: #fff;
+    font-weight: 900;
+    font-size: 13px;
+    font-family: inherit;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+    touch-action: none;
+}
