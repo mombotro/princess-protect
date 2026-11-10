@@ -11,7 +11,7 @@
 
 ## 🎮 How to Play
 
-Open the [live game](http://boccbo.cc/princess-protect/) or [`index.html`](file:///Users/juleah/Documents/games/Vala/princess-protect/index.html) in any modern web browser (Chrome, Safari, Firefox, Edge).
+Open the [live game](http://boccbo.cc/princess-protect/) or [`index.html`](index.html) in any modern web browser (Chrome, Safari, Firefox, Edge).
 
 ### Simple Controls (Arrow Keys + Space)
 | Key | Action | Description |
